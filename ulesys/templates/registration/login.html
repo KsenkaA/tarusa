@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tarusa system | Авторизация</title>
+    {% load crispy_forms_tags %}
+    {% load staticfiles %}
+    <link rel="stylesheet" href={% static 'bootstrap.min.css' %}>
+    <style>
+    </style>
+</head>
+<body>
+<div style="height: 70px; background-color: steelblue">
+        <a href="/"><div style="width: 40%; float: left; height: 70px">
+            <p style="font-family: 'Helvetica Neue'; font-size: 30px; color: white; padding-left:50px; vertical-align: middle; line-height: 70px; ">Tarusa system</p>
+        </div></a>
+    </div>
+<div class="row" style="margin-top: 16%; margin-left: 43%">
+    <div class="col">
+    <h2>Вход</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <br>
+    <button type="submit" class="btn-link">Вход</button>
+    </form>
+    </div>
+</div>
+</body>
+</html>

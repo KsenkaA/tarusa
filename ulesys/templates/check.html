@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load staticfiles %}
+    {% load crispy_forms_tags %}
+    {% load my_filters %}
+    <meta charset="UTF-8">
+    <title>Tarusa system | Сверка</title>
+    <link type="text/css" rel="stylesheet" href={% static 'bootstrap-select.css' %}>
+
+    <link rel="stylesheet" href={% static 'bootstrap.min.css' %}>
+ <style>
+    @import url("https://netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css");
+        a:visited {
+            text-decoration: none;
+            color: white;
+        }
+        a {
+            color: white;
+        }
+        a:hover {
+            text-decoration: underline;
+            color: white;
+        }
+
+        a:active {
+            text-decoration: underline;
+            color: white;
+        }
+        td {
+        cursor: pointer;
+        }
+        @font-face {
+          font-family: 'Glyphicons Halflings';
+
+          src: url({% static  '/fonts/glyphicons-halflings-regular.eot' %});
+          src: url({% static '/fonts/glyphicons-halflings-regular.eot?#iefix' %}) format('embedded-opentype'), url({% static '/fonts/glyphicons-halflings-regular.woff2' %}) format('woff2'), url({% static '/fonts/glyphicons-halflings-regular.woff'%}) format('woff'), url({% static '/fonts/glyphicons-halflings-regular.ttf'%}) format('truetype'), url({% static '/fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular'%}) format('svg');
+        }
+        #listResults .checkbox * {
+  cursor: pointer;
+}
+        #listResults .checkbox {
+  padding-left: 20px;
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+}
+
+#listResults .checkbox label {
+  display: inline-block;
+  vertical-align: middle;
+  position: relative;
+  padding-left: 5px;
+}
+
+#listResults .checkbox label::before {
+  content: "";
+  display: inline-block;
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  left: 0;
+  margin-left: -20px;
+  border: 1px solid #555;
+  border-radius: 3px;
+  background-color: #fff;
+  -webkit-transition: border 0.15s ease-in-out, color 0.15s ease-in-out;
+  -o-transition: border 0.15s ease-in-out, color 0.15s ease-in-out;
+  transition: border 0.15s ease-in-out, color 0.15s ease-in-out;
+}
+
+#listResults .checkbox label::after {
+  display: inline-block;
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  left: 0;
+  top: 2px;
+  margin-left: -21px;
+  padding-left: 3px;
+  padding-top: 1px;
+  font-size: 11px;
+  color: #555555;
+}
+
+#listResults .checkbox input[type="checkbox"]{
+  opacity: 0;
+  z-index: 1;
+  width: 20px;
+  height: 20px;
+}
+
+
+#listResults .checkbox input[type="checkbox"]:checked + label::after{
+  font-family: "FontAwesome";
+  content: "\f00c";
+}
+
+#listResults .checkbox.checkbox-circle label::before {
+  border-radius: 50%;
+}
+
+#listResults .checkbox.checkbox-inline {
+  margin-top: 0;
+}
+
+#listResults .checkbox-red    input[type="checkbox"]:checked + label::after,
+#listResults .checkbox-yellow input[type="checkbox"]:checked + label::after,
+#listResults .checkbox-green  input[type="checkbox"]:checked + label::after,
+#listResults .checkbox-blue   input[type="checkbox"]:checked + label::after,
+#listResults .checkbox-black  input[type="checkbox"]:checked + label::after
+{color: #fff;}
+
+#listResults .checkbox-red input[type="checkbox"] + label::before
+{background-color: #990000;  border-color: #990000;}
+
+#listResults .checkbox-yellow input[type="checkbox"] + label::before
+{background-color: #face00;  border-color: #face00;}
+
+#listResults .checkbox-green input[type="checkbox"] + label::before
+{background-color: #008000;  border-color: #008000;}
+
+#listResults .checkbox-blue input[type="checkbox"] + label::before
+{background-color: #428bca;  border-color: #428bca;}
+
+#listResults .checkbox-black input[type="checkbox"] + label::before
+{background-color: #000000;  border-color: #000000;}
+
+input[type="checkbox"].styled:checked + label:after {
+
+  font-family: 'FontAwesome' !important;
+  content: "\f00c";
+}
+    </style>
+</head>
+<body >
+<div style="height: 70px; background-color: steelblue">
+        <a href="/"><div style="width: 40%; float: left; height: 70px">
+            <p style="font-family: 'Helvetica Neue'; font-size: 30px; color: white; padding-left:50px; vertical-align: middle; line-height: 70px; ">Tarusa system</p>
+        </div></a>
+        {% if user.is_authenticated %}
+        <div style="float: right; width: 100px; height: 100%; color: white">
+                <div style="float: left; font-size: 25px; vertical-align: middle; line-height: 70px;" ><a href="/logout/">Выход</a></div>
+        </div>
+        {% else %}
+        <div style="float: right; width: 100px; height: 100%; color: white">
+            <div style="float: left; font-size: 25px; padding: 14px;"><a href="/login/">Вход</a></div>
+        </div>
+        {% endif %}
+    </div>
+<div style="padding: 20px;">
+    <h1>Сверка</h1>
+    <br>
+    <div class="row ">
+        <div class="col-xs">
+            <div class="form-group">
+                <select id="partner_choice" class="selectpicker" data-live-search="true">
+                    <option>Выберете партнера</option>
+                    {% for partner in partners %}
+                        <option>{{ partner.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="col-xs">
+            <div class="form-group">
+                <select id="or" class="selectpicker">
+                    <option>Выберете тип сверки</option>
+                    <option value="expenses">По расходам</option>
+                    <option value="incomes">По приходам</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-xs"  style="padding-top: 6px; padding-left: 30px;">
+            <h5 id="debt1"></h5>
+        </div>
+        <div class="col-xs"  style="padding-top: 8px; padding-left: 5px;" id="debt2">
+        </div>
+        <div class="ml-md-auto" style="padding-right: 40px"><button class="btn btn-link btn_didi" style="border-color: rgb(216, 216, 216) rgb(209, 209, 209) rgb(186, 186, 186);" id="btn_download">Скачать таблицу в Excel</button></div>
+    </div>
+    <table id="table_par" class="table" style="font-size: 14px">
+        {% if e_or_i == 'incomes' %}
+            <tr><th style="width: 250px">    Дата</th><th>    Способ оплаты</th><th>    Номер счета</th><th>    Номер счета у партнера</th><th style="width: 150px">    Сумма</th><th>    Фамилия клиента</th><th>    Месяц поездки</th></tr><tr id="search"><td><input type="date" id="from_date" class="s"><br><input type="date" id="to_date" class="s"></td><td>    <select id="way_s" class="s">            <option>-</option>            <option>Bank</option>            <option>Cash</option>            <option>6tour</option>            <option>Card</option>        </select></td><td><input style="width: 140px" id="number_s" class="s"></td><td><input style="width: 140px" id="number_n_s" class="s"></td><td><input style="width: 80px" placeholder="От" id="sum_start" class="s"><input placeholder="До" style="width: 80px" id="sum_end" class="s"></td><td><input style="width: 140px" id="name_s" class="s"></td><td><input style="width: 140px" id="month_s" class="s"></td></tr>
+            <tr id="search_btn">
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><button id="find_incomes" class="btn-link" style="width: 100%" >Поиск</button></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        {% elif e_or_i == 'expenses' %}
+            <tr><th style="width: 10px"></th><th style="white-space: nowrap;width: 10%;">    Дата</th><th>    Способ оплаты</th><th>    Номер счета</th><th style="width: 30px">    Номер счета у партнера</th><th style="width: 400px">    Услуга</th><th style="width: 150px">    Сумма</th><th style="width: 150px">    Осталось к оплате</th><th>    Фамилия клиента</th><th style="width: 30px">    Месяц поездки</th></tr><tr id="search">    <td>    <div id="listResults" class="text-center" style="margin-top: -25px">    <div class="checkbox checkbox-circle checkbox-red"> <input id="checkbox2" type="checkbox" checked class="s"> <label for="checkbox2"></label>   </div><div class="checkbox checkbox-circle checkbox-green"><input id="checkbox4" class="s" type="checkbox" checked><label for="checkbox4"></label></div> </div     </td>    <td><input type="date" id="from_date" class="s"><input type="date" id="to_date" class="s"></td>    <td>        <select id="way_s" class="s">            <option>-</option>            <option>Bank</option>            <option>Cash</option>            <option>6tour</option>            <option>Card</option>        </select>    </td>    <td><input style="width: 70px" id="number_s" class="s"></td>    <td><input style="width: 70px" id="number_n_s" class="s"></td>    <td><input style="width: 100%" id="service_s" class="s"></td>    <td><input style="width: 80px" placeholder="От" id="sum_start" class="s"><input  placeholder="До" style="width: 80px" id="sum_end" class="s"></td>    <td><input style="width: 80px" placeholder="От" id="left_start" class="s"><input  placeholder="До" style="width: 80px" id="left_end" class="s"></td>    <td><input style="width: 100%" id="name_s" class="s"></td>    <td><input style="width: 100%" id="month_s" class="s"></td></tr>
+            <tr id="search_btn">
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><button id="find_expenses" class="btn-link" style="width: 100%">Поиск</button></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        {% else %}
+        {% endif %}
+    </table>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+    <script src={% static 'bootstrap.min.js' %}></script>
+    <script src={% static 'bootstrap-select.js' %}></script>
+    <script>
+      $(document).ready(function () {
+        $('.selectpicker').selectpicker();
+      });
+    </script>
+    <script>
+        $("#partner_choice").change(function () {
+            var partner = $(this).val();
+            var or = $( "#or" ).val();
+            $.ajax({
+                url: '/load_partner/',
+                data: {partner: partner, or: or},
+                type: 'get',
+                success: function(data) {
+                $('.rm').remove();
+                $('#search_btn').remove();
+                $('#search').remove();
+                if (or == "incomes"){
+                            $("#table_par tr:last").after('</tr><tr id="search"><td><input type="date" id="from_date" class="s"><br><input type="date" id="to_date" class="s"></td><td>    <select id="way_s" class="s">            <option>-</option>            <option>Bank</option>            <option>Cash</option>            <option>6tour</option>            <option>Card</option>        </select></td><td><input style="width: 140px" id="number_s" class="s"></td><td><input style="width: 140px" id="number_n_s" class="s"></td><td><input style="width: 80px" placeholder="От" id="sum_start" class="s"><input placeholder="До" style="width: 80px" id="sum_end" class="s"></td><td><input style="width: 140px" id="name_s" class="s"></td><td><input style="width: 140px" id="month_s" class="s"></td></tr>');
+                            $("#search").after('<tr id="search_btn"><td></td><td></td><td></td><td><button onclick="find_incomes()" id="find_incomes" class="btn-link" style="width: 100%">Поиск</button></td><td></td><td></td><td></td></tr>');
+                        } else {
+                            $("#table_par tr:last").after('<tr id="search">    <td>    <div id="listResults" class="text-center" style="margin-top: -25px">    <div class="checkbox checkbox-circle checkbox-red"> <input id="checkbox2" type="checkbox" checked class="s"> <label for="checkbox2"></label>   </div><div class="checkbox checkbox-circle checkbox-green"><input id="checkbox4" class="s" type="checkbox" checked><label for="checkbox4"></label></div> </div     </td>    <td><input type="date" id="from_date" class="s"><input type="date" id="to_date" class="s"></td>    <td>        <select id="way_s" class="s">            <option>-</option>            <option>Bank</option>            <option>Cash</option>            <option>6tour</option>            <option>Card</option>        </select>    </td>    <td><input style="width: 70px" id="number_s" class="s"></td>    <td><input style="width: 70px" id="number_n_s" class="s"></td>    <td><input style="width: 100%" id="service_s" class="s"></td>    <td><input style="width: 80px" placeholder="От" id="sum_start" class="s"><input  placeholder="До" style="width: 80px" id="sum_end" class="s"></td>    <td><input style="width: 80px" placeholder="От" id="left_start" class="s"><input  placeholder="До" style="width: 80px" id="left_end" class="s"></td>    <td><input style="width: 100%" id="name_s" class="s"></td>    <td><input style="width: 100%" id="month_s" class="s"></td></tr>');
+                            $("#search").after('<tr id="search_btn"><td></td><td></td><td></td><td></td><td></td><td><button onclick="find_expenses()" id="find_expenses" class="btn-link" style="width: 100%">Поиск</button></td><td></td><td></td><td></td>><td></td></tr>');
+                        };
+
+                        $("#table_par tr:last").after(data);
+                   },
+            });
+        });
+        $("#or").change(function () {
+            var or = $(this).val();
+            var partner = $( "#partner_choice" ).val();
+            $.ajax({
+                url: '/load_partner/',
+                data: {partner: partner, or: or},
+                type: 'get',
+                success: function(data) {
+                        if (or == "incomes"){
+                            $("#table_par").html('<tr><th style="width: 250px">    Дата</th><th>    Способ оплаты</th><th>    Номер счета</th><th>    Номер счета у партнера</th><th style="width: 150px">    Сумма</th><th>    Фамилия клиента</th><th>    Месяц поездки</th></tr><tr id="search"><td><input type="date" id="from_date" class="s"><br><input type="date" id="to_date" class="s"></td><td>    <select id="way_s" class="s">            <option>-</option>            <option>Bank</option>            <option>Cash</option>            <option>6tour</option>            <option>Card</option>        </select></td><td><input style="width: 140px" id="number_s" class="s"></td><td><input style="width: 140px" id="number_n_s" class="s"></td><td><input style="width: 80px" placeholder="От" id="sum_start" class="s"><input placeholder="До" style="width: 80px" id="sum_end" class="s"></td><td><input style="width: 140px" id="name_s" class="s"></td><td><input style="width: 140px" id="month_s" class="s"></td></tr>');
+                            $("#search").after('<tr id="search_btn"><td></td><td></td><td></td><td><button onclick="find_incomes()" id="find_incomes" class="btn-link" style="width: 100%">Поиск</button></td><td></td><td></td><td></td></tr>');
+                        } else {
+                            $("#table_par").html('<tr><th style="width: 10px"></th><th style="white-space: nowrap;width: 10%;">    Дата</th><th>    Способ оплаты</th><th>    Номер счета</th><th style="width: 30px">    Номер счета у партнера</th><th style="width: 400px">    Услуга</th><th style="width: 150px">    Сумма</th><th style="width: 150px">    Осталось к оплате</th><th>    Фамилия клиента</th><th style="width: 30px">    Месяц поездки</th></tr><tr id="search">    <td>    <div id="listResults" class="text-center" style="margin-top: -25px">    <div class="checkbox checkbox-circle checkbox-red"> <input id="checkbox2" type="checkbox" checked class="s"> <label for="checkbox2"></label>   </div><div class="checkbox checkbox-circle checkbox-green"><input id="checkbox4" class="s" type="checkbox" checked><label for="checkbox4"></label></div> </div     </td>    <td><input type="date" id="from_date" class="s"><input type="date" id="to_date" class="s"></td>    <td>        <select id="way_s" class="s">            <option>-</option>            <option>Bank</option>            <option>Cash</option>            <option>6tour</option>            <option>Card</option>        </select>    </td>    <td><input style="width: 70px" id="number_s" class="s"></td>    <td><input style="width: 70px" id="number_n_s" class="s"></td>    <td><input style="width: 100%" id="service_s" class="s"></td>    <td><input style="width: 80px" placeholder="От" id="sum_start" class="s"><input  placeholder="До" style="width: 80px" id="sum_end" class="s"></td>    <td><input style="width: 80px" placeholder="От" id="left_start" class="s"><input  placeholder="До" style="width: 80px" id="left_end" class="s"></td>    <td><input style="width: 100%" id="name_s" class="s"></td>    <td><input style="width: 100%" id="month_s" class="s"></td></tr>');
+                            $("#search").after('<tr id="search_btn"><td></td><td></td><td></td><td></td><td></td><td><button onclick="find_expenses()" id="find_expenses" class="btn-link" style="width: 100%">Поиск</button></td><td></td><td></td><td></td>><td></td></tr>');
+                        };
+                        $("#table_par tr:last").after(data);
+                   },
+            });
+        });
+
+    </script>
+    <script>
+            function find_expenses(){
+                green = $('#checkbox4').is(':checked');
+                red = $('#checkbox2').is(':checked');
+                from_date = $('#from_date').val();
+                to_date = $('#to_date').val();
+                way_s = $('#way_s').val();
+                number_s = $('#number_s').val();
+                number_n_s = $('#number_n_s').val();
+                service_s = $('#service_s').val();
+                sum_start = $('#sum_start').val();
+                left_start = $('#left_start').val();
+                name_s = $('#name_s').val();
+                month_s = $('#month_s').val();
+                sum_end = $('#sum_end').val();
+                left_end = $('#left_end').val();
+                $.ajax({
+                    url: '/get_check/',
+                    data: {
+                        'green': green,
+                        'red': red,
+                        'from_date': from_date,
+                        'to_date': to_date,
+                        'way_s': way_s,
+                        'number_s': number_s,
+                        'number_n_s': number_n_s,
+                        'service_s': service_s,
+                        'sum_start': sum_start,
+                        'left_start': left_start,
+                        'name_s': name_s,
+                        'month_s': month_s,
+                        'sum_end': sum_end,
+                        'left_end': left_end,
+                        'partner': $( "#partner_choice" ).val(),
+
+                    },
+                    type: 'get',
+                    success: function(data) {
+                        $('.rm').remove();
+
+                         $("#table_par tr:last").after(data);
+                    },
+                });
+            };
+            function find_incomes(){
+                from_date = $('#from_date').val();
+                to_date = $('#to_date').val();
+                way_s = $('#way_s').val();
+                number_s = $('#number_s').val();
+                number_n_s = $('#number_n_s').val();
+                sum_start = $('#sum_start').val();
+                name_s = $('#name_s').val();
+                month_s = $('#month_s').val();
+                sum_end = $('#sum_end').val();
+                $.ajax({
+                    url: '/get_check1/',
+                    data: {
+                        'from_date': from_date,
+                        'to_date': to_date,
+                        'way_s': way_s,
+                        'number_s': number_s,
+                        'number_n_s': number_n_s,
+                        'sum_start': sum_start,
+                        'name_s': name_s,
+                        'month_s': month_s,
+                        'sum_end': sum_end,
+                        'partner': $( "#partner_choice" ).val(),
+                    },
+                    type: 'get',
+                    success: function(data) {
+                        $('.rm').remove();
+                        $("#table_par tr:last").after(data);
+                    },
+                });
+            };
+            function part_expense(element) {
+            var id = element.attr("class");
+            if ("{{ user.job.admin }}" == "True") {
+                window.location.href='/change_part_expense/' + id.toString() + '/';
+            };
+            if ("{{ user.job.manager }}" == "True") {
+                window.location.href='/change_part_expense_m/' + id.toString() + '/';
+            };
+            if ("{{ user.job.fin_manager }}" == "True") {
+                window.location.href='/change_part_expense_f/' + id.toString() + '/';
+            };
+
+
+        };
+    </script>
+    <script>
+        function whole_income(element) {
+            var id = element.attr("class");
+            if ("{{ user.job.admin }}" == "True") {
+                window.location.href='/change_income/' + id.toString() + '/';
+            };
+            if ("{{ user.job.manager }}" == "True") {
+                window.location.href='/change_income_m/' + id.toString() + '/';
+            };
+            if ("{{ user.job.fin_manager }}" == "True") {
+                window.location.href='/change_income_f/' + id.toString() + '/';
+            };
+        };
+        function part_income(element) {
+            var id = element.attr("class");
+            if ("{{ user.job.admin }}" == "True") {
+                window.location.href='/change_part_income/' + id.toString() + '/';
+            };
+            if ("{{ user.job.manager }}" == "True") {
+                window.location.href='/change_part_income_m/' + id.toString() + '/';
+            };
+            if ("{{ user.job.fin_manager }}" == "True") {
+                window.location.href='/change_part_income_f/' + id.toString() + '/';
+            };
+        };
+    </script>
+    </div>
+</body>
+</html>

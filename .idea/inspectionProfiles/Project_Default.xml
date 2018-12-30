@@ -1,0 +1,33 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="HtmlUnknownAttribute" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="myValues">
+        <value>
+          <list size="1">
+            <item index="0" class="java.lang.String" itemvalue="static" />
+          </list>
+        </value>
+      </option>
+      <option name="myCustomValuesEnabled" value="true" />
+    </inspection_tool>
+    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredIdentifiers">
+        <list>
+          <option value="ulesys.models.Manager.objects" />
+          <option value="ulesys.models.Partner.objects" />
+          <option value="ulesys.models.Order.objects" />
+          <option value="ulesys.models.PartOfIncome.objects" />
+          <option value="ulesys.models.WholeIncome.objects" />
+          <option value="ulesys.models.WholeExpense.objects" />
+          <option value="ulesys.models.Service.objects" />
+          <option value="ulesys.models.PartOfExpense.objects" />
+          <option value="ulesys.models.PartOfLilExpense.objects" />
+          <option value="ulesys.models.PayDay.objects" />
+          <option value="ulesys.models.GetPayedDay.objects" />
+          <option value="ulesys.models.Job.objects" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>

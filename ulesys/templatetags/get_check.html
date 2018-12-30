@@ -1,0 +1,134 @@
+{% if income %}
+{% for one in content %}
+    <tr class="header rm">
+                <td>
+                {{ one.created }}
+                </td>
+                <td>
+                    {{ one.way_to_pay }}
+                </td>
+                <td>
+                    -
+                </td>
+                <td>-</td>
+                <td class="money">
+                    {{ one.money }} {{ one.currency }}
+                </td>
+                <td>-</td>
+                <td>-</td>
+            </tr>
+            {% for lil_income in one.incomes.all %}
+    <tr class="rm">
+                <td></td>
+                <td></td>
+                <td>{{ lil_income.order.number }}</td>
+                <td>{{ lil_income.order.ref }}</td>
+                <td>{{ lil_income.money}} {{ lil_income.currency }}</td>
+                <td>{{ lil_income.order.last_name }}</td>
+                <td>{{ lil_income.order.end_month }}</td>
+    </tr>
+
+            {% endfor %}
+{% endfor %}
+{% else %}
+
+
+
+
+    {% for lil in content %}
+            <tr class="rm">
+                <td>
+                {% if lil.part_of_expense.payed %}
+                    ✅
+                {% else %}
+                    ❌
+                {% endif %}
+            </td>
+            <td>
+            {{ lil.whole_expense.created }}
+            </td>
+            <td>
+                {{ lil.whole_expense.way_to_pay }}
+            </td>
+                <td>{{ lil.part_of_expense.order_number }}</td>
+                <td>{{ lil.part_of_expense.service.order.ref }}</td>
+                <td>{{ lil.part_of_expense.service.name }} ({{ lil.part_of_expense.name }})</td>
+                <td>{{ lil.money}} {{ lil.currency }}</td>
+                <td>{{ lil.part_of_expense.left_to_pay }} {{ lil.part_of_expense.currency }} ({{ lil.part_of_expense.money|percent:lil.part_of_expense.left_to_pay }}%)</td>
+                <td>{{ lil.part_of_expense.service.order.last_name }}</td>
+                <td>{{ lil.part_of_expense.service.order.end_month }}</td>
+            </tr>
+    {% endfor %}
+{% endif %}
+
+    <script>
+    $(document).ready(function () {
+        if ('{{income}}' == 'False'){
+        var num = Math.floor((Math.random() * 100) + 1);
+        new_id = "btn_id_"+num.toString()
+        $('.btn-link').attr("id", new_id);
+        $('#'+new_id).click(function(){
+            var payeds = {{ file.0|safe }};
+            var dates = {{ file.1|safe }};
+            var ways = {{ file.2|safe }};
+            var numbers = {{ file.3|safe }};
+            var refs = {{ file.4|safe }};
+            var services = {{ file.5|safe }};
+            var summs = {{ file.6|safe }};
+            var left_to_pays = {{ file.7|safe }};
+            var names = {{ file.8|safe }};
+            var months = {{ file.9|safe }};
+            $.ajax({
+                    url: '/expense_check_file/',
+                    data: {
+                        'dates': dates,
+                        'ways': ways,
+                        'numbers': numbers,
+                        'refs': refs,
+                        'summs': summs,
+                        'names': names,
+                        'months': months,
+                        'services': services,
+                        'left_to_pays': left_to_pays,
+                        'payeds': payeds,
+                        'partner': '{{ partner }}',
+                    },
+                    type: 'get',
+                    success: function(data) {
+                            window.location.href='/' + data + '/';
+                       },
+                });
+
+    });} else {
+        var num = Math.floor((Math.random() * 1000) + 1);
+    new_id = "btn_id_"+num.toString()
+    $('.btn-link').attr("id", new_id);
+    $('#'+new_id).click(function(){
+        var dates = {{ file.0|safe }};
+        var ways = {{ file.1|safe }};
+        var numbers = {{ file.2|safe }};
+        var refs = {{ file.3|safe }};
+        var summs = {{ file.4|safe }};
+        var names = {{ file.5|safe }};
+        var months = {{ file.6|safe }};
+        $.ajax({
+                url: '/income_check_file/',
+                data: {
+                    'dates': dates,
+                    'ways': ways,
+                    'numbers': numbers,
+                    'refs': refs,
+                    'summs': summs,
+                    'names': names,
+                    'months': months,
+                    'partner': '{{ partner }}'
+                },
+                type: 'get',
+                success: function(data) {
+                    window.location.href='/' + data + '/';
+                   },
+            });
+             });});
+    };
+    });
+    </script>

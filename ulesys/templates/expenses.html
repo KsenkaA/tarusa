@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load crispy_forms_tags %}
+    {% load my_filters %}
+    {% load staticfiles %}
+    <meta charset="UTF-8">
+    <title>Tarusa system | Касса расходы</title>
+    <link type="text/css" rel="stylesheet" href={% static 'bootstrap-select.css' %}>
+    <link rel="stylesheet" href={% static 'bootstrap.min.css' %}>
+    <link href={% static 'incomes.css' %} rel='stylesheet'>
+    <style>
+
+        tr.header
+            {
+                cursor:pointer;
+            }
+        a:visited {
+            text-decoration: none;
+            color: white;
+        }
+        a {
+            color: white;
+        }
+ '       a:hover {
+            text-decoration: underline;
+            color: white;
+        }
+
+        a:active {
+            text-decoration: underline;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<div style="height: 70px; background-color: steelblue">
+        <a href="/"><div style="width: 40%; float: left; height: 70px">
+            <p style="font-family: 'Helvetica Neue'; font-size: 30px; color: white; padding-left:50px; vertical-align: middle; line-height: 70px; ">Tarusa system</p>
+        </div></a>
+        {% if user.is_authenticated %}
+        <div style="float: right; width: 100px; height: 100%; color: white">
+                <div style="float: left; font-size: 25px; vertical-align: middle; line-height: 70px;" ><a href="/logout/">Выход</a></div>
+        </div>
+        {% else %}
+        <div style="float: right; width: 100px; height: 100%; color: white">
+            <div style="float: left; font-size: 25px; padding: 14px;"><a href="/login/">Вход</a></div>
+        </div>
+        {% endif %}
+    </div>
+<div style="padding: 20px; text-align:center">
+    <div class="overlay js-overlay-campaign">
+        <div class="popup js-popup-campaign">
+            <h2>Новый расход</h2>
+            <form method="post" action="" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="num" value="" id="hidden1">
+                {{ form|crispy }}
+                <br>
+                <button type="submit" class="btn btn-link" style="border-color: rgb(216, 216, 216) rgb(209, 209, 209) rgb(186, 186, 186);" > Добавить расход</button>
+            </form>
+            <div class="close-popup js-close-campaign"></div>
+        </div>
+    </div>
+    <div class="overlay js-overlay-campaign1">
+        <div class="popup js-popup-campaign1">
+            <form method="post" action="" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="num" value="" id="hidden">
+                {{ income_form|crispy }}
+                <br>
+                <button type="submit" class="btn btn-link" style="border-color: rgb(216, 216, 216) rgb(209, 209, 209) rgb(186, 186, 186);" > Добавить расход</button>
+            </form>
+            <div class="close-popup js-close-campaign1"></div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-xs offset-md-5">
+            <h1 style="padding-bottom: 20px;">Касса расходы</h1>
+        </div>
+        <div class="col-xs" style="padding-top: 14px; padding-left: 10px">
+            {% if user.job.admin or user.job.fin_manager %}
+             <button  class="btn-link js-button-campaign">+</button>
+            {% endif %}
+        </div>
+        <div class="ml-md-auto" style="padding-top: 14px">
+             <button  class="btn-link" id="download_file">Скачать таблицу в Excel</button>
+        </div>
+    </div>
+
+
+    <table class="table table-hover tabletest" style="font-size: 14px">
+        <tr>
+            <th></th>
+            <th style="width: 140px">
+            Дата
+        </th>
+            <th style="width: 130px">
+                Партнер
+            </th>
+            <th>
+                Способ оплаты
+            </th>
+            <th>
+                Номер счета
+            </th>
+            <th>
+                Референс партнера
+            </th>
+           <th style="width: 400px">
+            Услуга
+        </th>
+            <th style="width: 150px">
+            Сумма
+        </th>
+            <th>
+                Фамилия клиента
+            </th>
+            <th>
+                Мес
+            </th>
+            <th>
+                 Комментарии
+            </th>
+            <th>
+                Файл
+            </th>
+        </tr>
+
+            {% for income in incomes %}
+                <tr class="header" id="{{ row_color|lookup:forloop.counter0 }}">
+                    <td>
+                        {% if user.job.admin %}
+                        <button  class="btn-link js-button-campaign1" title="Распределить по заказам" id="{{ forloop.counter }}">+</button>
+                        {% endif %}
+                    </td>
+                    <td onclick="whole_expense($(this));" class="{{ forloop.counter }}">
+                    {{ income.created }}
+                    </td>
+                    <td onclick="whole_expense($(this));" class="{{ forloop.counter }}"> {{ income.partner }}</td>
+                    <td onclick="whole_expense($(this));" class="{{ forloop.counter }}">
+                        {{ income.way_to_pay }}
+                    </td>
+                    <td onclick="whole_expense($(this));" class="{{ forloop.counter }}">
+                        -
+                    </td>
+                    <td onclick="whole_expense($(this));" class="{{ forloop.counter }}">-</td>
+                    <td onclick="whole_expense($(this));" class="{{ forloop.counter }}">-</td>
+                    <td onclick="whole_expense($(this));" class="{{ forloop.counter }}">
+                        {{ income.money }} {{ income.currency }}
+                    </td>
+
+                    <td onclick="whole_expense($(this));" class="{{ forloop.counter }}">-</td>
+                    <td onclick="whole_expense($(this));" class="{{ forloop.counter }}">-</td>
+                    <td onclick="whole_expense($(this));" class="{{ forloop.counter }}">
+                        {{ income.comments }}
+                    </td>
+                    <td><form><input type="button" class="btn-link" value="⇩" onclick="window.location.href='/{{ income.file }}/'"></form></td>
+
+                </tr>
+                {% for lil_income in income.expenses.all %}
+                        <tr>
+                            <td onclick="part_expense($(this));" class="{{ forloop.counter }}.{{ forloop.parentloop.counter }}"></td>
+                            <td onclick="part_expense($(this));" class="{{ forloop.counter }}.{{ forloop.parentloop.counter }}"></td>
+                            <td onclick="part_expense($(this));" class="{{ forloop.counter }}.{{ forloop.parentloop.counter }}"></td>
+                            <td onclick="part_expense($(this));" class="{{ forloop.counter }}.{{ forloop.parentloop.counter }}"></td>
+
+                            <td onclick="part_expense($(this));" class="{{ forloop.counter }}.{{ forloop.parentloop.counter }}">{{ lil_income.part_of_expense.order_number }}</td>
+                            <td onclick="part_expense($(this));" class="{{ forloop.counter }}.{{ forloop.parentloop.counter }}">{{ lil_income.part_of_expense.service.order.ref }}</td>
+                            <td onclick="part_expense($(this));" class="{{ forloop.counter }}.{{ forloop.parentloop.counter }}">{{ lil_income.part_of_expense.service.name }}({{ lil_income.part_of_expense.name }})</td>
+                            <td onclick="part_expense($(this));" class="{{ forloop.counter }}.{{ forloop.parentloop.counter }}">{{ lil_income.money}} {{ lil_income.currency }}</td>
+                            <td onclick="part_expense($(this));" class="{{ forloop.counter }}.{{ forloop.parentloop.counter }}">{{ lil_income.part_of_expense.service.order.last_name }}</td>
+                            <td onclick="part_expense($(this));" class="{{ forloop.counter }}.{{ forloop.parentloop.counter }}">{{ lil_income.part_of_expense.service.order.end_month }}</td>
+                            <td onclick="part_expense($(this));" class="{{ forloop.counter }}.{{ forloop.parentloop.counter }}">{{ lil_income.comments }} </td>
+                            <td onclick="part_expense($(this));" class="{{ forloop.counter }}.{{ forloop.parentloop.counter }}"></td>
+                        </tr>
+                {% endfor %}
+            {% endfor %}
+    </table>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+    <script src={% static 'bootstrap.min.js' %}></script>
+    <script src={% static 'bootstrap-select.js' %}></script>
+    <script>
+      $(document).ready(function () {
+        $('.selectpicker').selectpicker();
+      });
+    </script>
+    <script>
+        $("#id_number").change(function () {
+            var number = $(this).val();
+            $.ajax({
+                url: '/load_expenses/',
+                data: {number: number},
+                type: 'get',
+                success: function(data) {
+                    $("#id_service").html(data).selectpicker('refresh');
+                   },
+            });
+        })
+        function whole_expense(element) {
+            var id = element.attr("class");
+            if ("{{ user.job.admin }}" == "True") {
+                window.location.href='/change_expense/' + id.toString() + '/';
+            };
+            if ("{{ user.job.manager }}" == "True") {
+                window.location.href='/change_expense_m/' + id.toString() + '/';
+            };
+            if ("{{ user.job.fin_manager }}" == "True") {
+                window.location.href='/change_expense_f/' + id.toString() + '/';
+            };
+        };
+        function part_expense(element) {
+            var id = element.attr("class");
+            if ("{{ user.job.admin }}" == "True") {
+                window.location.href='/change_part_expense/' + id.toString() + '/';
+            };
+            if ("{{ user.job.manager }}" == "True") {
+                window.location.href='/change_part_expense_m/' + id.toString() + '/';
+            };
+            if ("{{ user.job.fin_manager }}" == "True") {
+                window.location.href='/change_part_expense_f/' + id.toString() + '/';
+            };
+        };
+    </script>
+    <script type="text/javascript">
+                $('.js-button-campaign').click(function() {
+
+                    $('.js-overlay-campaign').fadeIn();
+                    $('.js-overlay-campaign').addClass('disabled');
+                    var el = '<input name="point" value="tlt"></input>';
+                    $('.f').append(el);
+
+
+                });
+                $('.js-close-campaign').click(function() {
+        $('.js-overlay-campaign').fadeOut();
+
+});
+            </script>
+            <script>
+                $(document).ready(function(){
+                $(".js-button-campaign1").click(function(){
+                    $("#hidden").val(this.id);
+                });
+                });
+            </script>
+    <script>
+        $('.js-button-campaign1').click(function(){
+            $('.js-overlay-campaign1').fadeIn();
+            $('.js-overlay-campaign1').addClass('disabled');
+            });
+            $('.js-close-campaign1').click(function() {
+            $('.js-overlay-campaign1').fadeOut();
+        });
+    </script>
+<script>
+    $('.header').each(function() {
+            if (this.id == "not_ok")
+            $(this).css('backgroundColor', '#ffc3b7');
+        });
+</script>
+<script>
+    $('#download_file').click(function(){
+        var dates = {{ array.0|safe }};
+        var partners = {{ array.1|safe }};
+        var ways = {{ array.2|safe }};
+        var numbers = {{ array.3|safe }};
+        var refs = {{ array.4|safe }};
+        var summs = {{ array.5|safe }};
+        var names = {{ array.6|safe }};
+        var months = {{ array.7|safe }};
+        var services = {{ array.8|safe }}
+        $.ajax({
+                url: '/expense_cassa_file/',
+                data: {
+                    'dates': dates,
+                    'partners': partners,
+                    'ways': ways,
+                    'numbers': numbers,
+                    'refs': refs,
+                    'summs': summs,
+                    'names': names,
+                    'months': months,
+                    'services': services,
+                },
+                type: 'get',
+                success: function(data) {
+                    window.location.href='/' + data + '/';
+                   },
+            });
+
+    });
+</script>
+    </div>
+</body>
+</html>
+</body>
+</html>

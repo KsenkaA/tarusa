@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load crispy_forms_tags %}
+    {% load my_filters %}
+    {% load staticfiles %}
+
+    <link rel="stylesheet" href={% static 'bootstrap.min.css' %}>
+    <link type="text/css" rel="stylesheet" href={% static 'bootstrap-select.css' %}>
+    <link href={% static 'incomes.css' %} rel='stylesheet'>
+    <meta charset="UTF-8">
+    <title>Tarusa system | Заказ №{{ order.number }} </title>
+    <style>
+    .pointer{
+    cursor:pointer;
+    }
+    button {
+    cursor:pointer;
+    }
+        .main_info{
+            padding-bottom: 6px;
+        }
+        a:visited {
+                    text-decoration: none;
+                    color: white;
+        }
+        a {
+            color: white;
+        }
+ '       a:hover {
+            text-decoration: underline;
+            color: white;
+        }
+
+        a:active {
+            text-decoration: underline;
+            color: white;
+        }
+        div one {
+  display: flex;
+  justify-content: center;
+  position: relative;
+}
+h1 two {
+  text-align: center;
+}
+button three {
+  position: absolute;
+  right: 0;
+}
+@font-face {
+          font-family: 'Glyphicons Halflings';
+
+          src: url({% static  '/fonts/glyphicons-halflings-regular.eot' %});
+          src: url({% static '/fonts/glyphicons-halflings-regular.eot?#iefix' %}) format('embedded-opentype'), url({% static '/fonts/glyphicons-halflings-regular.woff2' %}) format('woff2'), url({% static '/fonts/glyphicons-halflings-regular.woff'%}) format('woff'), url({% static '/fonts/glyphicons-halflings-regular.ttf'%}) format('truetype'), url({% static '/fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular'%}) format('svg');
+        }
+        .glyphicon {
+          position: relative;
+          top: 1px;
+          display: inline-block;
+          font-family: 'Glyphicons Halflings';
+          font-style: normal;
+          font-weight: normal;
+          line-height: 1;
+
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+        }
+        .glyphicon-edit:before {
+  content: "\e065";
+}
+    </style>
+</head>
+<body>
+
+<div style="height: 70px; background-color: steelblue">
+        <a href="/"><div style="width: 40%; float: left; height: 70px">
+            <p style="font-family: 'Helvetica Neue'; font-size: 30px; color: white; padding-left:50px; vertical-align: middle; line-height: 70px; ">Tarusa system</p>
+        </div></a>
+        {% if user.is_authenticated %}
+        <div style="float: right; width: 100px; height: 100%; color: white">
+                <div style="float: left; font-size: 25px; vertical-align: middle; line-height: 70px;" ><a href="/logout/">Выход</a></div>
+        </div>
+        {% else %}
+        <div style="float: right; width: 100px; height: 100%; color: white">
+            <div style="float: left; font-size: 25px; padding: 14px;"><a href="/login/">Вход</a></div>
+        </div>
+        {% endif %}
+    </div>
+<div class="overlay js-overlay-campaign">
+		<div class="popup js-popup-campaign">
+             <form method="post" action="" enctype="multipart/form-data">
+                {% csrf_token %}
+                <strong>{{ form.name.label_tag }}</strong><br>
+                {{ form.name }}
+                <strong>{{ form.service.label_tag }}</strong>
+                {{ form.service }}
+                <strong>{{ form.money.label_tag }}</strong>
+                {{ form.money }}
+                <strong>{{ form.currency.label_tag }}</strong>
+                {{ form.currency }}
+                 {{ form.number }}
+                 <strong>График оплат:</strong>
+                 <div style="height: 200px; overflow:auto; border: 1px solid #ced4da; border-radius: .25rem;" >
+                    <table class="table" id="table">
+                        <tr>
+                            <td style="width: 30px">Процент</td>
+                            <td>Дата</td>
+                        </tr>
+                        <tr>
+                            <td style="border-bottom: 1px solid #dee2e6;"><input style="width: 100%" name="percent_1"></td>
+                            <td style="border-bottom: 1px solid #dee2e6;"><input type="date" style="width: 90%" value="{{ today }}" name="date_1"></td>
+                        </tr>
+                        <tr id="last_tr" class="1">
+                            <td><button type="button" class="btn btn-default" id="add_service" style="border-color: rgb(216, 216, 216) rgb(209, 209, 209) rgb(186, 186, 186);">+</button></td>
+                        </tr>
+                    </table>
+                 </div>
+                <strong>{{ form.partner.label_tag }}</strong>
+                {{ form.partner }}
+                <strong>{{ form.comments.label_tag }}</strong>
+                {{ form.comments }}
+                <br>
+                <button type="submit" class="btn btn-link" style="border-color: rgb(216, 216, 216) rgb(209, 209, 209) rgb(186, 186, 186);" > Добавить расход</button>
+            </form>
+			<div class="close-popup js-close-campaign"></div>
+		</div>
+	</div>
+<div class="overlay js-overlay-campaign1">
+		<div class="popup js-popup-campaign1">
+             <form method="post" action="" enctype="multipart/form-data">
+                 {% csrf_token %}
+                 <br>
+                 <h3>График оплат</h3>
+                <div style="height: 200px; overflow:auto; border: 1px solid #ced4da; border-radius: .25rem;" >
+                    <table class="table" id="table_gr">
+                        <tr>
+                            <td style="width: 30px">Процент</td>
+                            <td>Дата</td>
+                        </tr>
+                        <tr>
+                            <td style="border-bottom: 1px solid #dee2e6;"><input style="width: 100%" name="percent_gr_1"></td>
+                            <td style="border-bottom: 1px solid #dee2e6;"><input type="date" style="width: 90%" value="{{ today }}" name="date_gr_1"></td>
+                        </tr>
+                        <tr id="last_tr_gr" class="1">
+                            <td><button type="button" class="btn btn-default" id="add_gr" style="border-color: rgb(216, 216, 216) rgb(209, 209, 209) rgb(186, 186, 186);">+</button></td>
+                        </tr>
+                    </table>
+                </div>
+                <br>
+                <button type="submit" class="btn btn-link" style="border-color: rgb(216, 216, 216) rgb(209, 209, 209) rgb(186, 186, 186);" >Добавить график</button>
+            </form>
+			<div class="close-popup js-close-campaign1"></div>
+		</div>
+	</div>
+<div class="overlay js-overlay-campaign2">
+		<div class="popup js-popup-campaign2">
+             <form method="post" action="" enctype="multipart/form-data">
+                 {% csrf_token %}
+                 <br>
+                 <h3>Добавить услугу</h3>
+                <strong>Имя:</strong><br>
+                <input name="name" class="form-control" value="{{ service.name }}">
+                <strong>Цена для покупателя:</strong><br>
+                <input name="price_b" class="form-control" value="{{ service.price_for_buyer }}">
+                <strong>Реальная цена:</strong><br>
+                <input name="price" class="form-control" value="{{ service.real_price }}">
+                <br>
+                <button type="submit" class="btn btn-link" style="border-color: rgb(216, 216, 216) rgb(209, 209, 209) rgb(186, 186, 186);" >Добавить услугу</button>
+            </form>
+			<div class="close-popup js-close-campaign2"></div>
+		</div>
+	</div>
+<div class="row">
+    <div class="col-3">
+        <h1 style="padding: 20px; padding-left: 70px">
+            Заказ № {{ order.number }}
+        </h1>
+    </div>
+    <div class="col">
+        <button  class="btn-link two" id="download_in_or" style="margin-top: 30px;">Скачать invoice+order</button>
+    </div>
+</div>
+
+<div style="padding-left: 40px; padding-right: 20px">
+
+    <div class="row justify-content-around">
+        <div class="col-4">
+
+
+            <h3 style="text-align: left">
+                <button  class="btn-link two" style="font-size: 15px; border: 0px" id="edit_main"><span class="input-group-text lighten-3" id="basic-text1"><i class="glyphicon glyphicon-edit"
+                                                                         aria-hidden="true"></i></span></button>
+                Основная информация:
+            </h3>
+            <div style="border-top-style: solid; border-top-width: 2px; border-top-color: #ccc; width: 80%; " >
+                &nbsp
+            </div>
+            <div style="font-size: 120%; margin-top: -10px" class="main_info">
+                    <strong>
+                        Дата создания:
+                    </strong>
+                    {{ order.created }}
+            </div>
+            <div style="font-size: 120%" class="main_info">
+                    <strong>
+                        Дата начала тура:
+                    </strong>
+                    {{ order.tour_starts }}
+            </div>
+            <div style="font-size: 120%;" class="main_info">
+                    <strong>
+                        Партнер:
+                    </strong>
+                    {{ order.partner.name }}
+            </div>
+            <div style="font-size: 120%;" class="main_info">
+                    <strong>
+                        Менеджер:
+                    </strong>
+                    {{ order.manager.first_name }} {{ order.manager.last_name }}
+            </div>
+            <div style="font-size: 120%;" class="main_info">
+                    <strong>
+                        Номер заказа у партнера:
+                    </strong>
+                    {{ order.ref }}
+            </div>
+            <div style="font-size: 120%;" class="main_info">
+                    <strong>
+                        Менеджер клиента:
+                    </strong>
+                    {{ order.another_manager }}
+            </div>
+            <div style="font-size: 120%;" class="main_info">
+                    <strong>
+                        Фамилия клиента:
+                    </strong>
+                    {{ order.last_name }}
+            </div>
+            <div style="font-size: 120%;" class="main_info">
+                    <strong>
+                        Месяц окончания поездки:
+                    </strong>
+                    {{ order.end_month }}
+            </div>
+            <div style="font-size: 120%;" class="main_info">
+                    <strong>
+                        Коментарии к заказу:
+                    </strong>
+                    {{ order.comments }}
+            </div>
+            <div style="font-size: 120%;" class="main_info">
+                <button  class="btn-link js-button-campaign1 two" style="margin-bottom: .5rem;">+</button>
+                <strong>
+                    График платажей:
+                </strong>
+            </div>
+            <div style="height: 153px; overflow:auto; border: 1px solid #ced4da; border-radius: .25rem;">
+            <table class="table" style="font-size: 14px">
+                <tr>
+                    <th>Процент</th>
+                    <th>Дата</th>
+                </tr>
+                {% if order.get_payed_days.all %}
+                    {% for gr in order.get_payed_days.all %}
+                        <tr>
+                            <td>{{ gr.percent }}%</td>
+                            <td>{{ gr.date }}</td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+            </table>
+            </div>
+        </div>
+        <div class="col-7">
+            <div class="col-8">
+            <button  class="btn-link js-button-campaign2 two" style="margin-bottom: .5rem;">+</button>
+            <font style="margin-bottom: .5rem; font-family: inherit; font-weight: 500; line-height: 1.2; color: inherit; font-size: 1.75rem;">Услуги:</font>
+         </div>
+            <div style="border-top-style: solid; border-top-width: 2px; border-top-color: #ccc; width: 80%; ">
+                &nbsp
+            </div>
+
+            <div style="height: 464px; overflow:auto; border: 1px solid #ced4da; border-radius: .25rem;">
+                <table class="table" style="font-size: 14px">
+                    <tr>
+                        <th>Название услуги</th>
+                        <th>Цена для покупателя</th>
+                        <th>Реальная цена</th>
+                    </tr>
+                    {% for service in order.services.all %}
+                        <tr onclick="service_edit($(this));" id="{{ forloop.counter }}" class="pointer">
+                            <td>{{ service.name }}</td>
+                            <td>{{ service.price_for_buyer }} EUR</td>
+                            <td>{{ service.real_price }} EUR</td>
+                        </tr>
+                    {% endfor %}
+                    <tr>
+                        <th>Итого:</th>
+                        <th>{{ sum_buyer }} EUR</th>
+                        <th>{{ real_sum }} EUR</th>
+                    </tr>
+                </table>
+
+            </div>
+
+            <table class="table" style="margin-bottom: 0px;">
+                <tr style="font-size: 120%; padding-bottom: 0px;">
+                    <td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td style="padding-bottom: 0px;"><strong>Выгода: </strong>{{ got }} EUR ({{ percent }} %)</td>
+                </tr>
+            </table>
+
+        </div>
+    </div>
+    <div class="row justify-content-around" style="padding-left: 30px; padding-right: 30px">
+        <div class="col-4">
+             <h3 style="text-align: left">
+                Приходы:
+            </h3>
+        </div>
+        <div class="col-8">
+            <button  class="btn-link js-button-campaign two" style="margin-bottom: .5rem;">+</button>
+            <font style="margin-bottom: .5rem; font-family: inherit; font-weight: 500; line-height: 1.2; color: inherit; font-size: 1.75rem;">Расходы:</font>
+        </div>
+    </div>
+    <div class="row justify-content-around" style="padding-left: 30px; padding-right: 30px">
+        <div class="col-4">
+            <div style="border-top-style: solid; border-top-width: 2px; border-top-color: #ccc; width: 80%; ">
+                &nbsp
+            </div>
+            <div style="height: 415px; overflow:auto; border: 1px solid #ced4da; border-radius: .25rem;">
+
+                <table class="table" style="font-size: 14px">
+                    <tr>
+                    <th>Дата</th>
+                    <th>Сумма</th>
+                    <th>Комментарии</th>
+                </tr>
+                    {% for income in incomes %}
+                        <tr>
+                            <td>
+                                {{ income.whole_income.created }}
+                             </td>
+                            <td>
+                                {{ income.money}} {{ income.currency }}
+                            </td>
+                            <td>
+                                {{ income.whole_income.comments }}
+                            </td>
+                         </tr>
+                    {% endfor %}
+                </table>
+
+            </div>
+            <br>
+        </div>
+        <div class="col-8">
+            <div style="border-top-style: solid; border-top-width: 2px; border-top-color: #ccc; width: 80%; ">
+                &nbsp
+            </div>
+            <div style="height: 415px; overflow:auto; border: 1px solid #ced4da; border-radius: .25rem;">
+                <table class="table" style="font-size: 14px">
+                    <tr>
+                        <th style="width: 10px"></th>
+                        <th>Название</th>
+                        <th>Услуга</th>
+                        <th>Партнер</th>
+                        <th>Стоимость</th>
+                        <th>Осталось к оплате</th>
+                        <th>Комментарии</th>
+                    </tr>
+                    {% for expense in expenses %}
+                        <tr class="pointer" onclick="change_expense($(this));" id="{{ forloop.counter }}">
+                            <td>
+                                {% if expense.payed %}
+                                    ✅
+                                {% else %}
+                                    ❌
+                                {% endif %}
+                            </td>
+                            <td>{{ expense.name }}</td>
+                            <td>{{ expense.service.name }}</td>
+                            <td>{{ expense.partner.name }}</td>
+                            <td>{{ expense.money }} {{ expense.currency }}</td>
+                            <td>{{ expense.left_to_pay }} {{ expense.currency }} ({{ expense.money|percent:expense.left_to_pay }}%)</td>
+                            <td>{{ expense.comments }}</td>
+                        </tr>
+                        {% if expense.expenses.all %}
+                            <tr>
+                                    <td></td>
+                                    <th>Платежи</th>
+                                    <th>по данному</th>
+                                    <th>расходу:</th>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            {% for fact in expense.expenses.all %}
+
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td>{{ fact.whole_expense.created }}</td>
+                                    <td>{{ fact.money }} {{ fact.whole_expense.currency }}</td>
+                                    <td>{{ fact.comments }}</td>
+                                    <td></td>
+
+                                    <td></td>
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                </table>
+            </div>
+            </div>
+        </div>
+    <div class="row justify-content-around" style="padding-left: 30px; padding-right: 30px">
+        <div class="col">
+            <h3 style="text-align: left">
+                История заказа:
+            </h3>
+            <div style="border-top-style: solid; border-top-width: 2px; border-top-color: #ccc; width: 80%; " >
+                &nbsp
+            </div>
+             {% for item in history %}
+                 <form><input type="button" class="btn-link" value="⇩" onclick="window.location.href='/media/{{ item }}/'">&nbsp&nbsp{{ item }}</form>
+
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+
+<br>
+<br>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+    <script src={% static 'bootstrap.min.js' %}></script>
+    <script src={% static 'bootstrap-select.js' %}></script>
+<script>
+  $(document).ready(function () {
+    $('.selectpicker').selectpicker();
+  });
+</script>
+<script type="text/javascript">
+               // открыть по кнопке
+$('.js-button-campaign').click(function() {
+
+	$('.js-overlay-campaign').fadeIn();
+	$('.js-overlay-campaign').addClass('disabled');
+});
+
+// закрыть на крестик
+$('.js-close-campaign').click(function() {
+	$('.js-overlay-campaign').fadeOut();
+
+});
+
+// закрыть по клику вне окна
+$(document).mouseup(function (e) {
+	var popup = $('.js-popup-campaign');
+	if (e.target!=popup[0]&&popup.has(e.target).length === 0){
+		$('.js-overlay-campaign').fadeOut();
+
+	}
+});
+
+            </script>
+<script type="text/javascript">
+               // открыть по кнопке
+$('.js-button-campaign1').click(function() {
+
+	$('.js-overlay-campaign1').fadeIn();
+	$('.js-overlay-campaign1').addClass('disabled');
+});
+
+// закрыть на крестик
+$('.js-close-campaign1').click(function() {
+	$('.js-overlay-campaign1').fadeOut();
+
+});
+
+// закрыть по клику вне окна
+$(document).mouseup(function (e) {
+	var popup = $('.js-popup-campaign1');
+	if (e.target!=popup[0]&&popup.has(e.target).length === 0){
+		$('.js-overlay-campaign1').fadeOut();
+
+	}
+});
+
+            </script>
+<script type="text/javascript">
+               // открыть по кнопке
+$('.js-button-campaign2').click(function() {
+
+	$('.js-overlay-campaign2').fadeIn();
+	$('.js-overlay-campaign2').addClass('disabled');
+});
+
+// закрыть на крестик
+$('.js-close-campaign2').click(function() {
+	$('.js-overlay-campaign2').fadeOut();
+
+});
+
+// закрыть по клику вне окна
+$(document).mouseup(function (e) {
+	var popup = $('.js-popup-campaign2');
+	if (e.target!=popup[0]&&popup.has(e.target).length === 0){
+		$('.js-overlay-campaign2').fadeOut();
+
+	}
+});
+
+            </script>
+<script>
+        $('#add_service').click(function() {
+            var tr_class = parseInt($('#last_tr').attr('class'), 10) + 1;
+            $('#last_tr').before('<tr><td style="border-bottom: 1px solid #dee2e6;"><input style="width: 100%" name="percent_' + tr_class.toString() + '"></td><td style="border-bottom: 1px solid #dee2e6;"><input type="date" style="width: 90%" value="{{ today }}" name="date_' + tr_class.toString() + '"></td></tr>');
+
+            $("#last_tr").attr('class', tr_class);
+        });
+        $('#add_gr').click(function() {
+            var tr_class = parseInt($('#last_tr_gr').attr('class'), 10) + 1;
+            $('#last_tr_gr').before('<tr><td style="border-bottom: 1px solid #dee2e6;"><input style="width: 100%" name="percent_gr_' + tr_class.toString() + '"></td><td style="border-bottom: 1px solid #dee2e6;"><input type="date" style="width: 90%" value="{{ today }}" name="date_gr_' + tr_class.toString() + '"></td></tr>');
+
+            $("#last_tr_gr").attr('class', tr_class);
+        });
+        $('#edit_main').click(function() {
+            var id = {{ order.number }};
+            if (true) {
+                window.location.href='/change_order/' + id.toString() + '/';
+            };
+            /*
+            if ("{{ user.job.manager }}" == "True") {
+                window.location.href='/change_order_m/' + id.toString() + '/';
+            };
+            if ("{{ user.job.fin_manager }}" == "True") {
+                window.location.href='/change_order_f/' + id.toString() + '/';
+            };
+            */
+        });
+        function service_edit(element) {
+            var id = element.attr("id");
+            if (true) {
+                window.location.href='/change_service/' + id.toString() + " " + '{{ order.number }}' + '/';
+            };
+            /*
+            if ("{{ user.job.manager }}" == "True") {
+                window.location.href='/change_service_m/' + id.toString() + " " + '{{ order.number }}' + '/';
+            };
+            if ("{{ user.job.fin_manager }}" == "True") {
+                window.location.href='/change_service_f/' + id.toString() + " " + '{{ order.number }}' + '/';
+            };
+            */
+        };
+        function change_expense(element) {
+            var id = element.attr("id");
+            if (true) {
+                window.location.href='/change_order_expense/' + id.toString() + " " + '{{ order.number }}' + '/';
+            };
+            /*
+            if ("{{ user.job.manager }}" == "True") {
+                window.location.href='/change_order_expense_m/' + id.toString() + " " + '{{ order.number }}' + '/';
+            };
+            if ("{{ user.job.fin_manager }}" == "True") {
+                window.location.href='/change_order_expense_f/' + id.toString() + " " + '{{ order.number }}' + '/';
+            };
+            */
+        };
+        $('#download_in_or').click(function() {
+            var invoice_order = {{ array.0 }};
+            var customer_name = "{{ array.1|safe }}";
+            var customer_adress = "{{ array.2 }}";
+            var customer_VAT = "{{ array.3 }}";
+            var due_date = "{{ array.4 }}";
+            var remarks = "{{ array.5 }}";
+            var price_per_unit = {{ array.6|safe }};
+            var quantity = {{ array.7|safe }};
+            var amount = {{ array.8|safe }};
+            var total_amount = "{{ array.9 }}";
+            var reverse_charge = "{{ array.10|safe }}";
+            var services = {{ array.11|safe }};
+            var dannie_o_cliente = "{{ array.12 }}";
+            var payments_received = {{ array.13|safe }};
+            var EUR_arr = {{ array.14|safe }};
+            var Remarks_arr = {{ array.15|safe }};
+            var created = '{{ array.16|safe }}';
+            $.ajax({
+                url: '/order_in_or/',
+                data: {
+                    'invoice_order': invoice_order,
+                    'customer_name': customer_name,
+                    'customer_adress': customer_adress,
+                    'customer_VAT': customer_VAT,
+                    'due_date': due_date,
+                    'remarks': remarks,
+                    'price_per_unit': price_per_unit,
+                    'quantity': quantity,
+                    'amount': amount,
+                    'total_amount': total_amount,
+                    'reverse_charge': reverse_charge,
+                    'services': services,
+                    'dannie_o_cliente': dannie_o_cliente,
+                    'payments_received': payments_received,
+                    'EUR_arr': EUR_arr,
+                    'Remarks_arr': Remarks_arr,
+                    'created': created
+                },
+                type: 'get',
+                success: function(data) {
+                    window.location.href='/' + data + '/';
+                   },
+            });
+        });
+    </script>
+</body>
+</html>
+
+<!--
+<td style="border-bottom: 1px solid #dee2e6;"><input style="width: 100%" name="percent_1"></td>
+                            <td style="border-bottom: 1px solid #dee2e6;"><input type="date" style="width: 90%" value="{{ today }}"></td>
+!-->

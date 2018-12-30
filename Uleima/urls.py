@@ -1,0 +1,58 @@
+from django.contrib import admin
+from django.urls import include, path
+from ulesys import views
+from django.conf.urls import url
+from django.contrib import admin
+from django.contrib.auth import views as auth_views
+
+urlpatterns = [
+    path('new_order/', views.new_order),
+    path('admin/', admin.site.urls),
+    url(r'^login/$', auth_views.LoginView.as_view(), name='login'),
+    path('order/<int:order_id>/', views.order_screen),
+    path('incomes/', views.incomes),
+    path('media/<str:filename>/', views.download_file),
+    path('expenses/', views.expenses),
+    path('load_expenses/', views.load_expenses, name='load_expenses'),
+    path('load_expenses1/', views.load_expenses1, name='load_expenses1'),
+    path('load_partner/', views.load_partner, name='load_expenses'),
+    path('check/', views.check),
+    path('income_cassa_file/', views.income_cassa_file),
+    path('income_check_file/', views.income_check),
+    path('expense_cassa_file/', views.expense_cassa_file),
+    path('expense_check_file/', views.expense_check),
+    url(r'^logout/$', views.logout_view),
+    path('', views.index),
+    path('search/', views.search),
+    path('get_order/', views.get_order),
+    path('get_order1/', views.get_order1),
+    path('calendula/', views.calendula),
+    path('calendar/', views.my_calendar),
+    path('calendula1/', views.calendula1),
+    path('now_calendula1/', views.now_calendula1),
+    path('now_calendula/', views.now_calendula),
+    path('old_calendula1/', views.old_calendula1),
+    path('old_calendula/', views.old_calendula),
+    path('order/', views.order),
+    path('get_check/', views.get_check),
+    path('get_check1/', views.get_check1),
+    path('order_in_or/', views.order_in_or),
+    path('change_income/<int:income_id>/', views.change_income),
+    path('change_part_income/<str:income_id>/', views.change_part_income),
+    path('change_income_m/<int:income_id>/', views.change_income_m),
+    path('change_part_income_m/<str:income_id>/', views.change_part_income_m),
+    path('change_part_income_f/<str:income_id>/', views.change_part_income_f),
+    path('change_expense_f/<int:expense_id>/', views.change_expense_f),
+    path('change_expense/<int:expense_id>/', views.change_expense),
+    path('change_part_expense/<str:expense_id>/', views.change_part_expense),
+    path('change_expense_m/<int:expense_id>/', views.change_expense_m),
+    path('change_part_expense_m/<str:expense_id>/', views.change_part_expense_m),
+    path('change_part_expense_f/<str:expense_id>/', views.change_part_expense_f),
+    path('change_expense_f/<int:expensee_id>/', views.change_expense_f),
+    path('change_order/<int:order_id>/', views.change_order),
+    path('change_service/<str:service_id>/', views.change_service),
+    path('change_order_expense/<str:expense_id>/', views.change_order_expense),
+    #path('change_order_f/<int:order_id>/', views.change_order_f),
+    #path('change_order_m/<str:order_id>/', views.change_order_m),
+]
+

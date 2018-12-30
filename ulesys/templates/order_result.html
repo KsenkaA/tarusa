@@ -1,0 +1,35 @@
+{% if found %}
+
+    <tr>
+        <th>Номер заказа</th>
+        <td>Инвойс от</td>
+        <td>Партнер</td>
+        <td>Номер заказа у партнера</td>
+        <td>Фамилия клиета</td>
+    </tr>
+    {% for order in orders %}
+        <tr class="get_to_order" id="{{ order.number }}">
+            <th>
+                {{ order.number }}
+            </th>
+            <td>
+                {{ order.created }}
+            </td>
+            <td>
+                {{ order.partner }}
+            </td>
+            <td>
+                {{ order.ref }}
+            </td>
+            <td>
+                {{ order.last_name }}
+            </td>
+        </tr>
+    {% endfor %}
+{% else %}
+    <tr>
+        <th>
+            Ничего не найдено
+        </th>
+    </tr>
+{% endif %}

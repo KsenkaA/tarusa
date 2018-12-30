@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load crispy_forms_tags %}
+    {% load my_filters %}
+    {% load staticfiles %}
+    <meta charset="UTF-8">
+    <title>Tarusa system | Поиск</title>
+    <link type="text/css" rel="stylesheet" href={% static 'bootstrap-select.css' %}>
+    <link rel="stylesheet" href={% static 'bootstrap.min.css' %}>
+</head>
+<style>
+        @font-face {
+          font-family: 'Glyphicons Halflings';
+
+          src: url({% static  '/fonts/glyphicons-halflings-regular.eot' %});
+          src: url({% static '/fonts/glyphicons-halflings-regular.eot?#iefix' %}) format('embedded-opentype'), url({% static '/fonts/glyphicons-halflings-regular.woff2' %}) format('woff2'), url({% static '/fonts/glyphicons-halflings-regular.woff'%}) format('woff'), url({% static '/fonts/glyphicons-halflings-regular.ttf'%}) format('truetype'), url({% static '/fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular'%}) format('svg');
+        }
+        .glyphicon {
+          position: relative;
+          top: 1px;
+          display: inline-block;
+          font-family: 'Glyphicons Halflings';
+          font-style: normal;
+          font-weight: normal;
+          line-height: 1;
+
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+        }
+        .glyphicon-search:before {
+          content: "\e003";
+        }
+        a:visited {
+                    text-decoration: none;
+                    color: white;
+        }
+        a {
+            color: white;
+        }
+ '       a:hover {
+            text-decoration: underline;
+            color: white;
+        }
+
+        a:active {
+            text-decoration: underline;
+            color: white;
+        }
+        .input-group.md-form.form-sm.form-1 input{
+            border: 1px solid #bdbdbd;
+            border-top-right-radius: 0.25rem;
+            border-bottom-right-radius: 0.25rem;
+        }
+        tr.get_to_order
+        {
+            cursor:pointer;
+        }
+
+</style>
+</head>
+<body>
+<div style="height: 70px; background-color: steelblue">
+    <a href="/">
+        <div style="width: 40%; float: left; height: 70px">
+            <p style="font-family: 'Helvetica Neue'; font-size: 30px; color: white; padding-left:50px; vertical-align: middle; line-height: 70px; ">
+                Tarusa system</p>
+        </div>
+    </a>
+    {% if user.is_authenticated %}
+    <div style="float: right; width: 100px; height: 100%; color: white">
+        <div style="float: left; font-size: 25px; vertical-align: middle; line-height: 70px;"><a
+                href="/logout/">Выход</a></div>
+    </div>
+    {% else %}
+    <div style="float: right; width: 100px; height: 100%; color: white">
+            <div style="float: left; font-size: 25px; padding: 14px;"><a href="/login/">Вход</a></div>
+    </div>
+    {% endif %}
+</div>
+<div style="padding: 20px">
+    <div class="input-group md-form form-sm form-1 pl-0">
+        <div class="input-group-prepend">
+            <span class="input-group-text lighten-3" id="basic-text1"><i class="glyphicon glyphicon-search"
+                                                                         aria-hidden="true"></i></span>
+        </div>
+        <input class="form-control my-0 py-1" type="text"
+               placeholder="Введите номер счета/имя менеджера/партнера/фамилию клиента"
+               aria-label="Введите номер счета">
+    </div>
+    <br>
+    <div class="row">
+        <div class="col">
+            <select class="selectpicker" data-live-search="true" id="partner">
+                <option value="">Партнер</option>
+                {% for partner in partners %}
+                    <option value="{{ partner.name }}">{{ partner.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col">
+            <select class="selectpicker" data-live-search="true" id="last_name">
+                <option value="">Фамилия клиента</option>
+                {% for last_name in last_names %}
+                    <option value="{{ last_name }}">{{ last_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col">
+            <select class="selectpicker" data-live-search="true" id="manager">
+                <option value="">Менеджер</option>
+                {% for manager in managers %}
+                    <option value="{{ manager.first_name }} {{ manager.last_name }}">{{ manager.first_name }} {{ manager.last_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col">
+            <select class="selectpicker" data-live-search="true" id="create_date">
+                <option value="">Дата создания заказа</option>
+                {% for create_date in create_dates %}
+                    <option value="{{ create_date }}">{{ create_date }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col">
+            <select class="selectpicker" data-live-search="true" id="tour_date">
+                <option value="">Дата поездки</option>
+                {% for tour_date in tour_dates %}
+                    <option value="{{ tour_date }}">{{ tour_date }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <br>
+    <table id="search_result" class="table">
+        <tr>
+            <th>Номер заказа</th>
+            <td>Инвойс от</td>
+            <td>Партнер</td>
+            <td>Номер заказа у партнера</td>
+            <td>Фамилия клиета</td>
+        </tr>
+        {% for order in orders %}
+        <tr class="get_to_order" id="{{ order.number }}">
+            <th>
+                {{ order.number }}
+            </th>
+            <td>
+                {{ order.created }}
+            </td>
+            <td>
+                {{ order.partner }}
+            </td>
+            <td>
+                {{ order.ref }}
+            </td>
+            <td>
+                {{ order.last_name }}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"
+        integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4"
+        crossorigin="anonymous"></script>
+<script src={% static 'bootstrap.min.js' %}></script>
+<script src={% static 'bootstrap-select.js' %}></script>
+<script>
+      $(document).ready(function () {
+        $('.selectpicker').selectpicker();
+      });
+
+</script>
+<script>
+    $('.py-1').bind('input', function() {
+        var number = $(this).val();
+        $.ajax({
+            url: '/get_order/',
+            data: {
+                'number': number,
+            },
+            type: 'get',
+            success: function(data) {
+                $('#search_result').html(data);
+                $('.get_to_order').click(function(){
+                var id = this.id;
+                window.location.href='/order/' + id + '/';
+                });
+            },
+        });
+    });
+    $('.get_to_order').click(function(){
+    var id = this.id;
+    window.location.href='/order/' + id + '/';
+    });
+    $('.selectpicker').change(function(){
+        partner = $('#partner').val();
+        last_name = $('#last_name').val();
+        manager = $('#manager').val();
+        create_date = $('#create_date').val();
+        tour_date = $('#tour_date').val();
+        if (partner == last_name && manager == partner &&  create_date==tour_date && 0 == create_date) {
+            $("input").prop('disabled', false);
+        } else {
+            $("input").prop('disabled', true);
+        };
+        $.ajax({
+            url: '/get_order1/',
+            data: {
+                'partner': partner,
+                'last_name': last_name,
+                'manager': manager,
+                'create_date': create_date,
+                'tour_date': tour_date,
+            },
+            type: 'get',
+            success: function(data) {
+                $('#search_result').html(data);
+                $('.get_to_order').click(function(){
+                var id = this.id;
+                window.location.href='/order/' + id + '/';
+                });
+            },
+        });
+    });
+</script>
+</body>
+</html>
+<!-- $("input").prop('disabled', true); !-->

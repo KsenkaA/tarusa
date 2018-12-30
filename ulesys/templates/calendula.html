@@ -1,0 +1,52 @@
+{% load my_tags %}
+{% load staticfiles %}
+<tr>
+    <th>ПН</th>
+    <th>ВТ</th>
+    <th>СР</th>
+    <th>ЧТ</th>
+    <th>ПТ</th>
+    <th>СБ</th>
+    <th>ВС</th>
+</tr>
+{% for line in table %}
+<tr style="height: 94px">
+
+    {% for el in line %}
+
+        <td style="width: 14%">
+            {% if el != 0 %}
+
+                {{ el }}
+
+                {% for week in dates %}
+                    {% if forloop.counter0 == forloop.parentloop.parentloop.counter0 %}
+                        {% for day in week %}
+                            {% if forloop.counter0 == forloop.parentloop.parentloop.counter0 %}
+                                {% for action in day %}
+                                    <div style="background-color: #ffa9a3; margin-top: 16px; border-radius: 0.25rem">{{ action }}</div>
+                                {% endfor %}
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+
+                {% for week in payed_dates %}
+                    {% if forloop.counter0 == forloop.parentloop.parentloop.counter0 %}
+                        {% for day in week %}
+                            {% if forloop.counter0 == forloop.parentloop.parentloop.counter0 %}
+                                {% for action in day %}
+                                    <div style="background-color: #d7ffb7; margin-top: 16px; border-radius: 0.25rem">{{ action }}</div>
+                                {% endfor %}
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+
+
+            {% endif %}
+        </td>
+
+    {% endfor %}
+</tr>
+{% endfor %}
